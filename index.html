@@ -124,31 +124,38 @@
         const db = firebase.firestore();
 
         // Enviar pedido
-        document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+       document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-            const nombre = document.getElementById('nombre').value;
-            const curso = document.getElementById('curso').value;
-            const clase = document.getElementById('clase').value;
-            const pedido = document.getElementById('pedido').value;
-            const precio = parseFloat(document.getElementById('precio').value);
+    const nombre = document.getElementById('nombre').value;
+    const curso = document.getElementById('curso').value;
+    const clase = document.getElementById('clase').value;
+    const pedido = document.getElementById('pedido').value;
+    const precio = parseFloat(document.getElementById('precio').value);
 
-            try {
-                await db.collection('pedidos').add({
-                    nombre: nombre,
-                    curso: curso,
-                    clase: clase,
-                    pedido: pedido,
-                    precio: precio,
-                    fecha: new Date().toLocaleString()
-                });
-                
-                alert('✅ Pedido enviado correctamente');
-                document.getElementById('pedidoForm').reset();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
+    // Generar ID único basado en fecha y hora
+    const fecha = new Date();
+    const idPedido = fecha.toISOString()
+        .replace(/[-:]/g, '')  // Eliminar guiones y dos puntos
+        .replace('T', '_')     // Formato legible
+        .split('.')[0];        // Quitar milisegundos
+
+    try {
+        await db.collection('pedidos').doc(idPedido).set({
+            nombre: nombre,
+            curso: curso,
+            clase: clase,
+            pedido: pedido,
+            precio: precio,
+            fecha: fecha.toLocaleString()
         });
+        
+        alert('✅ Pedido enviado correctamente');
+        document.getElementById('pedidoForm').reset();
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
+    }
+});
     </script>
 </body>
 </html>
