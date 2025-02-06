@@ -26,6 +26,12 @@
             font-size: 16px;
         }
 
+        input[readonly] {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
         button {
             background: #28a745;
             color: white;
@@ -45,8 +51,15 @@
         h1 {
             font-size: 24px;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
             color: #333;
+        }
+
+        #bienvenida {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
         }
 
         #pedidoForm {
@@ -58,43 +71,18 @@
                 padding: 15px;
                 margin: 10px auto;
             }
-
-            input, textarea {
-                padding: 12px;
-                font-size: 14px;
-            }
-
-            button {
-                padding: 14px;
-                font-size: 15px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-        }
-
-        @media (max-width: 320px) {
-            body {
-                padding: 10px;
-            }
-
-            input, textarea {
-                padding: 10px;
-            }
         }
     </style>
 </head>
 <body>
     <h1>🍔 PATICILIO 🏃‍➡️</h1>
+    <p id="bienvenida"></p>
 
-    <!-- Botón para iniciar sesión con Google -->
     <button id="googleSignInBtn">Iniciar sesión con Google</button>
 
-    <!-- Formulario de pedido, inicialmente oculto -->
     <form id="pedidoForm">
         <div class="form-group">
-            <input type="text" id="nombre" placeholder="Nombre" required>
+            <input type="text" id="nombre" placeholder="Nombre" readonly required>
         </div>
         <div class="form-group">
             <input type="text" id="curso" placeholder="Curso (ej: 4°ESO)" required>
@@ -133,40 +121,39 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Función para manejar el inicio de sesión con Google
+        let userName = ""; // Variable para almacenar el nombre del usuario
+
+        // Función para iniciar sesión con Google
         async function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                const result = await auth.signInWithPopup(provider); // Inicia sesión y espera la respuesta
-                const user = result.user; // Usuario autenticado
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
 
-                // Verificar el dominio del correo
+                // Verificar si el correo pertenece al dominio correcto
                 if (user.email.endsWith('@iesbendinat.org')) {
-                    alert('✅ Bienvenido, ' + user.displayName);
-                    document.getElementById('pedidoForm').style.display = 'block';  // Mostrar el formulario
-                    document.getElementById('googleSignInBtn').style.display = 'none';  // Ocultar el botón de inicio de sesión
+                    userName = user.displayName; // Guardar el nombre
+                    document.getElementById('bienvenida').textContent = `¡Hola, ${userName}! Haz tu pedido aquí.`;
+                    document.getElementById('nombre').value = userName; // Rellenar el input de nombre
+                    document.getElementById('pedidoForm').style.display = 'block';  
+                    document.getElementById('googleSignInBtn').style.display = 'none';  
                 } else {
                     alert('❌ Solo se permite el inicio de sesión con correos de @iesbendinat.org');
-                    auth.signOut();  // Cerrar sesión si el dominio no es válido
-                    document.getElementById('googleSignInBtn').style.display = 'block';  // Mostrar el botón de inicio de sesión de nuevo
+                    auth.signOut();
                 }
             } catch (error) {
                 alert('❌ Error al iniciar sesión: ' + error.message);
             }
         }
 
-        // Establecer el listener para el estado de autenticación
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                // Si ya hay un usuario autenticado, verificamos si el dominio es correcto
-                if (user.email.endsWith('@iesbendinat.org')) {
-                    alert('✅ Bienvenido, ' + user.displayName);
-                    document.getElementById('pedidoForm').style.display = 'block';  // Mostrar el formulario
-                    document.getElementById('googleSignInBtn').style.display = 'none';  // Ocultar el botón de inicio de sesión
-                } else {
-                    alert('❌ Solo se permite el inicio de sesión con correos de @iesbendinat.org');
-                    auth.signOut();  // Cerrar sesión si el dominio no es válido
-                }
+        // Verificar si el usuario ya está autenticado
+        auth.onAuthStateChanged((user) => {
+            if (user && user.email.endsWith('@iesbendinat.org')) {
+                userName = user.displayName;
+                document.getElementById('bienvenida').textContent = `¡Hola, ${userName}! Haz tu pedido aquí.`;
+                document.getElementById('nombre').value = userName;
+                document.getElementById('pedidoForm').style.display = 'block';
+                document.getElementById('googleSignInBtn').style.display = 'none';
             }
         });
 
@@ -177,39 +164,34 @@
         document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const nombre = document.getElementById('nombre').value;
             const curso = document.getElementById('curso').value;
             const clase = document.getElementById('clase').value;
             const pedido = document.getElementById('pedido').value;
             const precio = parseFloat(document.getElementById('precio').value);
-            const user = auth.currentUser; // Obtener usuario autenticado
+            const user = auth.currentUser; 
 
-            // Verificar que el dominio del correo sea el correcto antes de guardar en la base de datos
             if (user && user.email.endsWith('@iesbendinat.org')) {
-                // Generar ID único basado en fecha y hora
                 const fecha = new Date();
-                const idPedido = fecha.toISOString()
-                    .replace(/[-:]/g, '')  // Eliminar guiones y dos puntos
-                    .replace('T', '_')     // Formato legible
-                    .split('.')[0];        // Quitar milisegundos
+                const idPedido = fecha.toISOString().replace(/[-:]/g, '').replace('T', '_').split('.')[0];
 
                 try {
                     await db.collection('pedidos').doc(idPedido).set({
-                        nombre: nombre,
+                        nombre: userName,
                         curso: curso,
                         clase: clase,
                         pedido: pedido,
                         precio: precio,
                         fecha: fecha.toLocaleString()
                     });
-                    
+
                     alert('✅ Pedido enviado correctamente');
                     document.getElementById('pedidoForm').reset();
+                    document.getElementById('nombre').value = userName; // Mantener el nombre en el input
                 } catch (error) {
                     alert('❌ Error: ' + error.message);
                 }
             } else {
-                alert('❌ Solo se pueden enviar pedidos con cuentas del dominio @iesbendinat.org');
+                alert('❌ Solo se pueden enviar pedidos con cuentas de @iesbendinat.org');
             }
         });
     </script>
