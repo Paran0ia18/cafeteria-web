@@ -1,217 +1,79 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Paticilio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
+<script>
+    let usuarioAutenticado = null; // Variable para guardar el usuario autenticado
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    // Función para manejar el inicio de sesión con Google
+    async function signInWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+            const result = await auth.signInWithPopup(provider);
+            usuarioAutenticado = result.user; // Guardamos el usuario autenticado
 
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        button {
-            background: #28a745;
-            color: white;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-
-        h1 {
-            font-size: 24px;
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        #pedidoForm {
-            display: none;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
-                margin: 10px auto;
-            }
-
-            input, textarea {
-                padding: 12px;
-                font-size: 14px;
-            }
-
-            button {
-                padding: 14px;
-                font-size: 15px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-        }
-
-        @media (max-width: 320px) {
-            body {
-                padding: 10px;
-            }
-
-            input, textarea {
-                padding: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <h1>🍔 PATICILIO 🏃‍➡️</h1>
-
-    <!-- Botón para iniciar sesión con Google -->
-    <button id="googleSignInBtn">Iniciar sesión con Google</button>
-
-    <!-- Formulario de pedido, inicialmente oculto -->
-    <form id="pedidoForm">
-        <div class="form-group">
-            <input type="text" id="nombre" placeholder="Nombre" required>
-        </div>
-        <div class="form-group">
-            <input type="text" id="curso" placeholder="Curso (ej: 4°ESO)" required>
-        </div>
-        <div class="form-group">
-            <input type="text" id="clase" placeholder="Clase (ej: B)" required>
-        </div>
-        <div class="form-group">
-            <textarea id="pedido" placeholder="¿Qué quieres pedir? Ej: 1 napolitana, 1 caña..." rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-            <input type="number" id="precio" placeholder="Precio total del pedido (€)" step="0.01" required>
-        </div>
-        <button type="submit">Enviar pedido</button>
-    </form>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
-    <script>
-        // Configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyC3ACFV4OhWyeO9HPWCk178elETe0QU4Wk",
-            authDomain: "cafeteria-5efd7.firebaseapp.com",
-            projectId: "cafeteria-5efd7",
-            storageBucket: "cafeteria-5efd7.firebasestorage.app",
-            messagingSenderId: "966085276321",
-            appId: "1:966085276321:web:b0f21eb889f06be7db76e0",
-            measurementId: "G-JS7V84N2SG"
-        };
-
-        // Inicializa Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Función para manejar el inicio de sesión con Google
-        async function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                const result = await auth.signInWithPopup(provider); // Inicia sesión y espera la respuesta
-                const user = result.user; // Usuario autenticado
-
-                // Verificar el dominio del correo
-                if (user.email.endsWith('@iesbendinat.org')) {
-                    alert('✅ Bienvenido, ' + user.displayName);
-                    document.getElementById('pedidoForm').style.display = 'block';  // Mostrar el formulario
-                    document.getElementById('googleSignInBtn').style.display = 'none';  // Ocultar el botón de inicio de sesión
-                } else {
-                    alert('❌ Solo se permite el inicio de sesión con correos de @iesbendinat.org');
-                    auth.signOut();  // Cerrar sesión si el dominio no es válido
-                    document.getElementById('googleSignInBtn').style.display = 'block';  // Mostrar el botón de inicio de sesión de nuevo
-                }
-            } catch (error) {
-                alert('❌ Error al iniciar sesión: ' + error.message);
-            }
-        }
-
-        // Establecer el listener para el estado de autenticación
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                // Si ya hay un usuario autenticado, verificamos si el dominio es correcto
-                if (user.email.endsWith('@iesbendinat.org')) {
-                    alert('✅ Bienvenido, ' + user.displayName);
-                    document.getElementById('pedidoForm').style.display = 'block';  // Mostrar el formulario
-                    document.getElementById('googleSignInBtn').style.display = 'none';  // Ocultar el botón de inicio de sesión
-                } else {
-                    alert('❌ Solo se permite el inicio de sesión con correos de @iesbendinat.org');
-                    auth.signOut();  // Cerrar sesión si el dominio no es válido
-                }
-            }
-        });
-
-        // Evento para iniciar sesión con Google
-        document.getElementById('googleSignInBtn').addEventListener('click', signInWithGoogle);
-
-        // Enviar pedido
-        document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const nombre = document.getElementById('nombre').value;
-            const curso = document.getElementById('curso').value;
-            const clase = document.getElementById('clase').value;
-            const pedido = document.getElementById('pedido').value;
-            const precio = parseFloat(document.getElementById('precio').value);
-            const user = auth.currentUser; // Obtener usuario autenticado
-
-            // Verificar que el dominio del correo sea el correcto antes de guardar en la base de datos
-            if (user && user.email.endsWith('@iesbendinat.org')) {
-                // Generar ID único basado en fecha y hora
-                const fecha = new Date();
-                const idPedido = fecha.toISOString()
-                    .replace(/[-:]/g, '')  // Eliminar guiones y dos puntos
-                    .replace('T', '_')     // Formato legible
-                    .split('.')[0];        // Quitar milisegundos
-
-                try {
-                    await db.collection('pedidos').doc(idPedido).set({
-                        nombre: nombre,
-                        curso: curso,
-                        clase: clase,
-                        pedido: pedido,
-                        precio: precio,
-                        fecha: fecha.toLocaleString()
-                    });
-                    
-                    alert('✅ Pedido enviado correctamente');
-                    document.getElementById('pedidoForm').reset();
-                } catch (error) {
-                    alert('❌ Error: ' + error.message);
-                }
+            // Verificar el dominio del correo
+            if (usuarioAutenticado.email.endsWith('@iesbendinat.org')) {
+                alert('✅ Bienvenido, ' + usuarioAutenticado.displayName);
+                document.getElementById('pedidoForm').style.display = 'block';
+                document.getElementById('googleSignInBtn').style.display = 'none';
             } else {
-                alert('❌ Solo se pueden enviar pedidos con cuentas del dominio @iesbendinat.org');
+                alert('❌ Solo se permite el inicio de sesión con correos de @iesbendinat.org');
+                auth.signOut();
+                usuarioAutenticado = null; // Asegurar que el usuario no quede registrado
+                document.getElementById('googleSignInBtn').style.display = 'block';
             }
-        });
-    </script>
-</body>
-</html>
+        } catch (error) {
+            alert('❌ Error al iniciar sesión: ' + error.message);
+        }
+    }
+
+    // Verificar el usuario al cambiar el estado de autenticación
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user && user.email.endsWith('@iesbendinat.org')) {
+            usuarioAutenticado = user;
+            document.getElementById('pedidoForm').style.display = 'block';
+            document.getElementById('googleSignInBtn').style.display = 'none';
+        } else {
+            usuarioAutenticado = null;
+            auth.signOut();
+            document.getElementById('pedidoForm').style.display = 'none';
+            document.getElementById('googleSignInBtn').style.display = 'block';
+        }
+    });
+
+    // Evento de inicio de sesión con Google
+    document.getElementById('googleSignInBtn').addEventListener('click', signInWithGoogle);
+
+    // Enviar pedido con validación de dominio
+    document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!usuarioAutenticado || !usuarioAutenticado.email.endsWith('@iesbendinat.org')) {
+            alert('❌ No tienes permiso para enviar pedidos.');
+            return; // Bloqueamos el envío
+        }
+
+        const nombre = document.getElementById('nombre').value;
+        const curso = document.getElementById('curso').value;
+        const clase = document.getElementById('clase').value;
+        const pedido = document.getElementById('pedido').value;
+        const precio = parseFloat(document.getElementById('precio').value);
+
+        const fecha = new Date();
+        const idPedido = fecha.toISOString().replace(/[-:]/g, '').replace('T', '_').split('.')[0];
+
+        try {
+            await db.collection('pedidos').doc(idPedido).set({
+                nombre: nombre,
+                curso: curso,
+                clase: clase,
+                pedido: pedido,
+                precio: precio,
+                fecha: fecha.toLocaleString(),
+                usuario: usuarioAutenticado.email // Guardar el email en la base de datos
+            });
+
+            alert('✅ Pedido enviado correctamente');
+            document.getElementById('pedidoForm').reset();
+        } catch (error) {
+            alert('❌ Error: ' + error.message);
+        }
+    });
+</script>
