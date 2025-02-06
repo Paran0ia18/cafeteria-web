@@ -83,8 +83,12 @@
 </head>
 <body>
     <h1>🍔 PATICILIO 🏃‍➡️</h1>
-    <!-- ¡Aquí estaban faltando los campos del formulario! -->
-    <form id="pedidoForm">
+
+    <!-- Botón para iniciar sesión con Google -->
+    <button id="googleSignInBtn">Iniciar sesión con Google</button>
+
+    <!-- Formulario de pedido -->
+    <form id="pedidoForm" style="display:none;">
         <div class="form-group">
             <input type="text" id="nombre" placeholder="Nombre" required>
         </div>
@@ -106,6 +110,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
     <script>
         // Configuración de Firebase (¡usando tus datos!)
@@ -122,40 +127,62 @@
         // Inicializa Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Iniciar sesión con Google
+        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+
+                // Verificar el dominio del correo
+                if (user.email.endsWith('@iesbendinat.org')) {
+                    alert('✅ Bienvenido, ' + user.displayName);
+                    document.getElementById('pedidoForm').style.display = 'block';  // Mostrar el formulario
+                    document.getElementById('googleSignInBtn').style.display = 'none';  // Ocultar el botón de inicio de sesión
+                } else {
+                    alert('❌ Solo se permite el inicio de sesión con correos de @iesbendinat.org');
+                    auth.signOut();  // Cerrar sesión si el dominio no es válido
+                }
+            } catch (error) {
+                alert('❌ Error al iniciar sesión: ' + error.message);
+            }
+        });
 
         // Enviar pedido
-       document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+        document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-    const nombre = document.getElementById('nombre').value;
-    const curso = document.getElementById('curso').value;
-    const clase = document.getElementById('clase').value;
-    const pedido = document.getElementById('pedido').value;
-    const precio = parseFloat(document.getElementById('precio').value);
+            const nombre = document.getElementById('nombre').value;
+            const curso = document.getElementById('curso').value;
+            const clase = document.getElementById('clase').value;
+            const pedido = document.getElementById('pedido').value;
+            const precio = parseFloat(document.getElementById('precio').value);
 
-    // Generar ID único basado en fecha y hora
-    const fecha = new Date();
-    const idPedido = fecha.toISOString()
-        .replace(/[-:]/g, '')  // Eliminar guiones y dos puntos
-        .replace('T', '_')     // Formato legible
-        .split('.')[0];        // Quitar milisegundos
+            // Generar ID único basado en fecha y hora
+            const fecha = new Date();
+            const idPedido = fecha.toISOString()
+                .replace(/[-:]/g, '')  // Eliminar guiones y dos puntos
+                .replace('T', '_')     // Formato legible
+                .split('.')[0];        // Quitar milisegundos
 
-    try {
-        await db.collection('pedidos').doc(idPedido).set({
-            nombre: nombre,
-            curso: curso,
-            clase: clase,
-            pedido: pedido,
-            precio: precio,
-            fecha: fecha.toLocaleString()
+            try {
+                await db.collection('pedidos').doc(idPedido).set({
+                    nombre: nombre,
+                    curso: curso,
+                    clase: clase,
+                    pedido: pedido,
+                    precio: precio,
+                    fecha: fecha.toLocaleString()
+                });
+                
+                alert('✅ Pedido enviado correctamente');
+                document.getElementById('pedidoForm').reset();
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
         });
-        
-        alert('✅ Pedido enviado correctamente');
-        document.getElementById('pedidoForm').reset();
-    } catch (error) {
-        alert('❌ Error: ' + error.message);
-    }
-});
     </script>
 </body>
 </html>
