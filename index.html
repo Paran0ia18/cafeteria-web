@@ -8,7 +8,7 @@
             max-width: 600px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #f5f5f5;
         }
         .form-group {
             margin-bottom: 15px;
@@ -19,6 +19,7 @@
             margin: 5px 0;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-sizing: border-box;
         }
         button {
             background: #28a745;
@@ -28,6 +29,7 @@
             border-radius: 4px;
             cursor: pointer;
             width: 100%;
+            font-size: 16px;
         }
         button:hover {
             background: #218838;
@@ -35,61 +37,72 @@
     </style>
 </head>
 <body>
-    <h1>📝 Pedir a la cafetería</h1>
+    <h1>🍔 Pedidos Cafetería</h1>
     <form id="pedidoForm">
         <div class="form-group">
-            <input type="text" id="nombre" placeholder="Tu nombre" required>
+            <input type="text" id="nombre" placeholder="Nombre" required>
         </div>
         <div class="form-group">
-            <input type="text" id="curso" placeholder="Curso (ej: 3°ESO)" required>
+            <input type="text" id="curso" placeholder="Curso (ej: 4°ESO)" required>
         </div>
         <div class="form-group">
-            <input type="text" id="clase" placeholder="Clase (ej: Aula 12)" required>
+            <input type="text" id="clase" placeholder="Clase (ej: Aula 5B)" required>
         </div>
         <div class="form-group">
-            <textarea id="pedido" placeholder="¿Qué quieres pedir? (ej: 1 bocadillo jamón, 1 refresco)" rows="3" required></textarea>
+            <textarea id="pedido" placeholder="¿Qué quieres pedir? Ej: 1 bocadillo, 1 refresco..." rows="3" required></textarea>
         </div>
         <div class="form-group">
-            <input type="number" id="precio" placeholder="Precio total en € (ej: 3.50)" step="0.01" required>
+            <input type="number" id="precio" placeholder="Precio total (€)" step="0.01" required>
         </div>
         <button type="submit">Enviar pedido</button>
     </form>
 
+    <!-- Firebase SDK (versión compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
     <script>
-        // URL de tu Google Apps Script (la crearás en el Paso 3)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdfkOZ6PgcAmdZbdUcEHBNnZvWTf0qfpayrfaSlsNYiMHUcThvwd25yCk9iB6NL7BhPw/exec';
+        // Configuración de Firebase (¡usando tus datos!)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3ACFV4OhWyeO9HPWCk178elETe0QU4Wk",
+            authDomain: "cafeteria-5efd7.firebaseapp.com",
+            projectId: "cafeteria-5efd7",
+            storageBucket: "cafeteria-5efd7.firebasestorage.app",
+            messagingSenderId: "966085276321",
+            appId: "1:966085276321:web:b0f21eb889f06be7db76e0",
+            measurementId: "G-JS7V84N2SG"
+        };
 
+        // Inicializa Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(); // Accede a Firestore
+
+        // Enviar pedido a Firestore
         document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+            e.preventDefault();
 
-  const data = {
-    nombre: document.getElementById('nombre').value,
-    curso: document.getElementById('curso').value,
-    clase: document.getElementById('clase').value,
-    pedido: document.getElementById('pedido').value,
-    precio: document.getElementById('precio').value
-  };
+            const nombre = document.getElementById('nombre').value;
+            const curso = document.getElementById('curso').value;
+            const clase = document.getElementById('clase').value;
+            const pedido = document.getElementById('pedido').value;
+            const precio = parseFloat(document.getElementById('precio').value);
 
-  try {
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      alert('✅ Pedido enviado. ¡Revisa Google Sheets!');
-      document.getElementById('pedidoForm').reset();
-    } else {
-      alert(`❌ Error: ${result.error || 'Desconocido'}`);
-    }
-    
-  } catch (error) {
-    alert(`🚨 Error de conexión: ${error.message}`);
-  }
-});
+            try {
+                await db.collection('pedidos').add({
+                    nombre: nombre,
+                    curso: curso,
+                    clase: clase,
+                    pedido: pedido,
+                    precio: precio,
+                    fecha: new Date().toLocaleString()
+                });
+                
+                alert('✅ Pedido enviado correctamente');
+                document.getElementById('pedidoForm').reset();
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        });
     </script>
 </body>
 </html>
