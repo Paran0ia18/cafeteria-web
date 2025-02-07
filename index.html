@@ -16,9 +16,10 @@
 
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
 
-        input, textarea, button {
+        input, textarea {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
@@ -31,7 +32,12 @@
         button {
             background: #28a745;
             color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            width: 100%;
+            font-size: 16px;
             transition: background 0.3s;
         }
 
@@ -40,45 +46,81 @@
         }
 
         #logoutBtn {
-            background: #dc3545;
+            background: none;
+            color: #777;
+            font-size: 14px;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 10px;
+            padding: 5px;
         }
 
         #logoutBtn:hover {
-            background: #c82333;
+            color: #333;
+        }
+
+        #loginBtn {
+            background: #007bff;
+            width: auto;
+            padding: 10px 15px;
+        }
+
+        #loginBtn:hover {
+            background: #0056b3;
         }
 
         h1 {
             font-size: 24px;
+            margin-bottom: 20px;
             color: #333;
         }
 
-        #userInfo {
-            margin-bottom: 20px;
-            font-weight: bold;
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            button {
+                padding: 14px;
+                font-size: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>🍔 PATICILIO 🏃‍➡️</h1>
     
-    <div id="userInfo">Cargando usuario...</div>
-    <button id="logoutBtn">Cerrar sesión</button>
+    <!-- Mensaje de bienvenida -->
+    <div id="userInfo" style="margin-bottom: 15px;">Cargando usuario...</div>
 
-    <form id="pedidoForm">
-        <div class="form-group">
-            <input type="text" id="curso" placeholder="Curso (ej: 4°ESO)" required>
-        </div>
-        <div class="form-group">
-            <input type="text" id="clase" placeholder="Clase (ej: B)" required>
-        </div>
-        <div class="form-group">
-            <textarea id="pedido" placeholder="¿Qué quieres pedir? Ej: 1 napolitana, 1 caña..." rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-            <input type="number" id="precio" placeholder="Precio total del pedido (€)" step="0.01" required>
-        </div>
-        <button type="submit">Enviar pedido</button>
-    </form>
+    <!-- Contenido de la web (se oculta si no hay sesión) -->
+    <div id="contenido" style="display: none;">
+        <form id="pedidoForm">
+            <div class="form-group">
+                <input type="text" id="curso" placeholder="Curso (ej: 4°ESO)" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="clase" placeholder="Clase (ej: B)" required>
+            </div>
+            <div class="form-group">
+                <textarea id="pedido" placeholder="¿Qué quieres pedir?" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <input type="number" id="precio" placeholder="Precio total (€)" step="0.01" required>
+            </div>
+            <button type="submit">Enviar pedido</button>
+        </form>
+        
+        <!-- Botón de cerrar sesión (ahora más discreto) -->
+        <button id="logoutBtn">Cerrar sesión</button>
+    </div>
+
+    <!-- Botón de iniciar sesión (visible si no hay sesión) -->
+    <button id="loginBtn" style="display: none;">Iniciar sesión con Google</button>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -91,38 +133,56 @@
             apiKey: "AIzaSyC3ACFV4OhWyeO9HPWCk178elETe0QU4Wk",
             authDomain: "cafeteria-5efd7.firebaseapp.com",
             projectId: "cafeteria-5efd7",
-            storageBucket: "cafeteria-5efd7.firebasestorage.app",
+            storageBucket: "cafeteria-5efd7.appspot.com",
             messagingSenderId: "966085276321",
             appId: "1:966085276321:web:b0f21eb889f06be7db76e0",
             measurementId: "G-JS7V84N2SG"
         };
 
-        // Inicializa Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Autenticación de usuario
+        // Manejar el estado de autenticación
         auth.onAuthStateChanged(user => {
+            const contenido = document.getElementById("contenido");
+            const loginBtn = document.getElementById("loginBtn");
+            const userInfo = document.getElementById("userInfo");
+
             if (user) {
+                // Verificar el dominio del email
                 if (!user.email.endsWith("@iesbendinat.org")) {
                     alert("⚠️ Solo se permiten correos del instituto");
                     auth.signOut();
                     return;
                 }
 
-                document.getElementById("userInfo").textContent = `Bienvenido, ${user.displayName}`;
+                userInfo.textContent = `Bienvenido, ${user.displayName}`;
+                contenido.style.display = "block";  // Mostrar contenido
+                loginBtn.style.display = "none";    // Ocultar botón de login
             } else {
-                window.location.href = "login.html"; // Redirigir si no hay sesión iniciada
+                contenido.style.display = "none";  // Ocultar contenido
+                loginBtn.style.display = "block";  // Mostrar botón de login
+                userInfo.textContent = "Inicia sesión para hacer un pedido";
             }
         });
 
-        // Cerrar sesión
+        // Iniciar sesión con Google
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
+            }
+        });
+
+        // Cerrar sesión sin redirigir a otra página
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 await auth.signOut();
                 alert('👋 Sesión cerrada correctamente');
-                window.location.reload();
             } catch (error) {
                 console.error('Error al cerrar sesión:', error);
             }
@@ -133,33 +193,21 @@
             e.preventDefault();
 
             const user = auth.currentUser;
-            if (!user) {
-                alert("⚠️ Debes iniciar sesión para hacer un pedido");
-                return;
-            }
+            if (!user) return;
 
+            const nombre = user.displayName;
+            const email = user.email;
             const curso = document.getElementById('curso').value;
             const clase = document.getElementById('clase').value;
             const pedido = document.getElementById('pedido').value;
             const precio = parseFloat(document.getElementById('precio').value);
-            const nombre = user.displayName;
-            const email = user.email;
-
-            // Generar ID único basado en fecha y hora
             const fecha = new Date();
-            const idPedido = fecha.toISOString()
-                .replace(/[-:]/g, '')
-                .replace('T', '_')
-                .split('.')[0];
+
+            const idPedido = fecha.toISOString().replace(/[-:]/g, '').split('.')[0];
 
             try {
                 await db.collection('pedidos').doc(idPedido).set({
-                    nombre: nombre,
-                    email: email,
-                    curso: curso,
-                    clase: clase,
-                    pedido: pedido,
-                    precio: precio,
+                    nombre, email, curso, clase, pedido, precio,
                     fecha: fecha.toLocaleString()
                 });
 
