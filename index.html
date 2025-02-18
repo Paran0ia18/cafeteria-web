@@ -3,222 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paticilio</title>
+    <title>Cambio Climático y Biodiversidad Marina</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+        }
+        .hero {
+            background: url('https://www.posidoniamallorca.org/media/posidonia-oceanica.jpg') center/cover;
+            color: white;
+            padding: 100px 20px;
             text-align: center;
         }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
+        .hero h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
         }
-
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        button {
-            background: #28a745;
-            color: white;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-
-        #logoutBtn {
-            background: none;
-            color: #777;
-            font-size: 14px;
-            text-decoration: underline;
-            cursor: pointer;
-            margin-top: 10px;
-            padding: 5px;
-        }
-
-        #logoutBtn:hover {
-            color: #333;
-        }
-
-        #loginBtn {
-    background: #007bff;
-    width: auto;
-    padding: 10px 15px;
-    margin: 20px auto;  /* Centra el botón */
-    display: block;      /* Asegura que el margen auto funcione */
-}
-
-        #loginBtn:hover {
-            background: #0056b3;
-        }
-
-        h1 {
-            font-size: 24px;
+        .hero p {
+            font-size: 1.2rem;
             margin-bottom: 20px;
-            color: #333;
         }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
+        .btn {
+            background-color: #2E8B57;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .box {
+            background: white;
+            width: 100%;
+            max-width: 350px;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .box img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .box h3 {
+            margin: 15px 0;
+        }
+        .btn-secondary {
+            background-color: #1F7A56;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        footer {
+            background: #2E8B57;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        @media (min-width: 768px) {
+            .box {
+                width: 30%;
             }
-
-            button {
-                padding: 14px;
-                font-size: 15px;
-            }
-
-            h1 {
-                font-size: 20px;
+            .hero h1 {
+                font-size: 3rem;
             }
         }
     </style>
 </head>
 <body>
-    <h1>🍔 PATICILIO 🏃‍➡️</h1>
-    
-    <!-- Mensaje de bienvenida -->
-    <div id="userInfo" style="margin-bottom: 15px;">Cargando usuario...</div>
-
-    <!-- Contenido de la web (se oculta si no hay sesión) -->
-    <div id="contenido" style="display: none;">
-        <form id="pedidoForm">
-            <div class="form-group">
-                <input type="text" id="curso" placeholder="Curso (ej: 4°ESO)" required>
+    <header class="hero">
+        <div class="container">
+            <h1>El Cambio Climático y la Biodiversidad Marina</h1>
+            <p>Explora cómo el cambio climático está afectando a nuestros océanos y lo que podemos hacer para proteger la vida marina.</p>
+            <a href="#impacto" class="btn">Explora los Efectos</a>
+        </div>
+    </header>
+    <section id="impacto" class="section">
+        <div class="container">
+            <h2>Impacto en la Biodiversidad Marina</h2>
+            <div class="content">
+                <div class="box">
+                    <img src="https://media.istockphoto.com/id/613678930/es/foto/peces-tropicales-de-un-arrecife-de-coral.jpg?s=612x612&w=0&k=20&c=Rwds611hu2L_JNlsj6SCLDe5IhBgnz3QpFt-jL9S58s=" alt="Corales">
+                    <h3>Blanqueamiento de los Corales</h3>
+                    <p>El blanqueamiento de los corales ocurre cuando los corales expulsan las algas simbióticas que les dan color debido al aumento de la temperatura del agua.</p>
+                    <a href="https://coral.org/es/blog/que-es-el-blanqueamiento-del-coral-y-por-que-deberia-preocuparte/#:~:text=Es%20una%20situaci%C3%B3n%20en%20la,ah%C3%AD%20el%20t%C3%A9rmino%20%C2%ABblanqueamiento%C2%BB." class="btn-secondary">Más información</a>
+                </div>
+                <div class="box">
+                    <img src="https://content.nationalgeographic.com.es/medio/2011/03/24/maracido03_714x476.jpg" alt="Océanos Ácidos">
+                    <h3>Acidificación de los Océanos</h3>
+                    <p>El CO2 absorbido por los océanos disminuye su pH, afectando gravemente a los ecosistemas marinos.</p>
+                    <a href="https://www.nrdc.org/es/stories/acidificacion-oceanos-lo-debes-saber#:~:text=de%20los%20oc%C3%A9anos%3F-,%C2%BFQu%C3%A9%20es%20la%20acidificaci%C3%B3n%20de%20los%20oc%C3%A9anos%3F,que%20absorbe%20de%20la%20atm%C3%B3sfera." class="btn-secondary">Más información</a>
+                </div>
+                <div class="box">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpKADwh3hT14SMTakVWBtJHSXItTbG-E3dZw&s" alt="Desaparición de especies">
+                    <h3>Desaparición de Especies</h3>
+                    <p>El aumento de la temperatura del agua está llevando a muchas especies marinas al borde de la extinción.</p>
+                    <a href="https://www.nationalgeographic.es/medio-ambiente/2019/04/las-especies-marinas-desaparecen-mas-rapido-que-las-terrestres" class="btn-secondary">Más información</a>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="text" id="clase" placeholder="Clase (ej: B)" required>
-            </div>
-            <div class="form-group">
-                <textarea id="pedido" placeholder="¿Qué quieres pedir?" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <input type="number" id="precio" placeholder="Precio total (€)" step="0.01" required>
-            </div>
-            <button type="submit">Enviar pedido</button>
-        </form>
-        
-        <!-- Botón de cerrar sesión (ahora más discreto) -->
-        <button id="logoutBtn">Cerrar sesión</button>
-    </div>
-
-    <!-- Botón de iniciar sesión (visible si no hay sesión) -->
-    <button id="loginBtn" style="display: none;">Iniciar sesión con Google</button>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
-    <script>
-        // Configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyC3ACFV4OhWyeO9HPWCk178elETe0QU4Wk",
-            authDomain: "cafeteria-5efd7.firebaseapp.com",
-            projectId: "cafeteria-5efd7",
-            storageBucket: "cafeteria-5efd7.appspot.com",
-            messagingSenderId: "966085276321",
-            appId: "1:966085276321:web:b0f21eb889f06be7db76e0",
-            measurementId: "G-JS7V84N2SG"
-        };
-
-        // Inicializar Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Manejar el estado de autenticación
-        auth.onAuthStateChanged(user => {
-            const contenido = document.getElementById("contenido");
-            const loginBtn = document.getElementById("loginBtn");
-            const userInfo = document.getElementById("userInfo");
-
-            if (user) {
-                // Verificar el dominio del email
-                if (!user.email.endsWith("@iesbendinat.org")) {
-                    alert("⚠️ Solo se permiten correos del instituto");
-                    auth.signOut();
-                    return;
-                }
-
-                userInfo.textContent = `Bienvenido, ${user.displayName}`;
-                contenido.style.display = "block";  // Mostrar contenido
-                loginBtn.style.display = "none";    // Ocultar botón de login
-            } else {
-                contenido.style.display = "none";  // Ocultar contenido
-                loginBtn.style.display = "block";  // Mostrar botón de login
-                userInfo.textContent = "Inicia sesión para hacer un pedido";
-            }
-        });
-
-        // Iniciar sesión con Google
-        document.getElementById('loginBtn').addEventListener('click', async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-            } catch (error) {
-                console.error('Error al iniciar sesión:', error);
-            }
-        });
-
-        // Cerrar sesión sin redirigir a otra página
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await auth.signOut();
-                alert('👋 Sesión cerrada correctamente');
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-            }
-        });
-
-        // Enviar pedido
-        document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const nombre = user.displayName;
-            const email = user.email;
-            const curso = document.getElementById('curso').value;
-            const clase = document.getElementById('clase').value;
-            const pedido = document.getElementById('pedido').value;
-            const precio = parseFloat(document.getElementById('precio').value);
-            const fecha = new Date();
-
-            const idPedido = fecha.toISOString().replace(/[-:]/g, '').split('.')[0];
-
-            try {
-                await db.collection('pedidos').doc(idPedido).set({
-                    nombre, email, curso, clase, pedido, precio,
-                    fecha: fecha.toLocaleString()
-                });
-
-                alert('✅ Pedido enviado correctamente');
-                document.getElementById('pedidoForm').reset();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
-        });
-    </script>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2025 Cambio Climático y Biodiversidad Marina. Todos los derechos reservados.</p>
+    </footer>
 </body>
 </html>
