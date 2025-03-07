@@ -87,20 +87,17 @@
             padding: 20px;
             margin-top: 20px;
         }
-        @media (min-width: 768px) {
-            .box {
-                width: 30%;
-            }
-            .hero h1 {
-                font-size: 3rem;
-            }
+        /* Estilo para los logos en la cabecera */
+        .logos {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Espacio entre los logos */
+            margin-bottom: 30px; /* Espacio debajo de los logos */
         }
-        /* Estilo para el logo */
         .logo {
-            width: 150px; /* Tamaño del logo */
-            height: 150px; /* Altura para que sea un círculo perfecto */
+            width: 100px; /* Tamaño del logo */
+            height: 100px; /* Altura para que sea un círculo perfecto */
             border-radius: 50%; /* Hace que el logo sea un círculo */
-            margin-bottom: 20px; /* Espacio debajo del logo */
             border: none; /* Elimina cualquier borde */
             box-shadow: none; /* Elimina cualquier sombra del logo */
         }
@@ -109,8 +106,12 @@
 <body>
     <header class="hero">
         <div class="container">
-            <!-- Logo en la cabecera -->
-            <img src="logo.png" alt="Logo" class="logo"> <!-- Asegúrate de que la ruta y el nombre del archivo sean correctos -->
+            <!-- Contenedor para los tres logos -->
+            <div class="logos">
+                <img src="logo.png" alt="Logo 1" class="logo"> <!-- Asegúrate de que la ruta y el nombre del archivo sean correctos -->
+                <img src="twg.png" alt="Logo 2" class="logo">
+                <img src="iben.png" alt="Logo 3" class="logo">
+            </div>
             <h1>El Cambio Climático y la Biodiversidad Marina</h1>
             <p>Explora cómo el cambio climático está afectando a nuestros océanos y lo que podemos hacer para proteger la vida marina.</p>
             <a href="#impacto" class="btn">Explora los Efectos</a>
