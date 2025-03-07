@@ -96,7 +96,10 @@
         }
         .logo {
             width: 100px; /* Tamaño del logo */
-            height: auto; /* Mantiene la proporción original */
+            height: 100px; /* Altura para que sea un círculo perfecto */
+            border-radius: 50%; /* Hace que el logo sea un círculo */
+            border: none; /* Elimina cualquier borde */
+            box-shadow: none; /* Elimina cualquier sombra del logo */
         }
     </style>
 </head>
@@ -105,9 +108,9 @@
         <div class="container">
             <!-- Contenedor para los tres logos -->
             <div class="logos">
-                <img src="logo.png" alt="Logo 1" class="logo"> <!-- Asegúrate de que la ruta y el nombre del archivo sean correctos -->
-                <img src="twg.png" alt="Logo 2" class="logo"> <!-- Este logo del medio sin recorte -->
-                <img src="iben.png" alt="Logo 3" class="logo">
+                <img src="assets/logo1.png" alt="Logo 1" class="logo"> <!-- Asegúrate de que la ruta y el nombre del archivo sean correctos -->
+                <img src="assets/logo2.png" alt="Logo 2" class="logo">
+                <img src="assets/logo3.png" alt="Logo 3" class="logo">
             </div>
             <h1>El Cambio Climático y la Biodiversidad Marina</h1>
             <p>Explora cómo el cambio climático está afectando a nuestros océanos y lo que podemos hacer para proteger la vida marina.</p>
